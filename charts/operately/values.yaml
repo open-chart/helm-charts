@@ -76,13 +76,45 @@ persistence:
 
 # TODO this one
 postgresql:
-  enabled: false
+  enabled: true
 
+  auth:
+    postgresPassword: postgresPassword
+    username: postgres
+    password: keyboard-cat
+    database: postgres
+
+  primary:
+    persistence:
+      enabled: true
+      storageClass: "longhorn"
+      size: 1Gi
+
+# TODO this one
 externalPostgres:
-  enabled: true
-
-minio: 
   enabled: false
 
-externalMinio:
+# TODO this one
+minio: 
   enabled: true
+
+  auth:
+    rootUser: admin
+    rootPassword: rootPassword
+
+  defaultBuckets: "operately"
+
+  persistence:
+    enabled: true
+    storageClass: "longhorn"
+    size: 1Gi
+
+  service:
+    type: ClusterIP
+    ports:
+      api: 9000
+      console: 9001  
+
+# TODO this one
+externalMinio:
+  enabled: false
