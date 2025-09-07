@@ -14,3 +14,15 @@ keywords:
 home: https://github.com/open-selfhost/helm-charts
 sources:
   - https://github.com/operately/operately
+
+
+dependencies:
+- condition: postgresql.enabled
+  name: postgresql
+  version: 16.7.27
+  repository: https://charts.bitnami.com/bitnami
+
+- condition: minio.enabled
+  name: minio
+  version: 17.0.21
+  repository: https://charts.bitnami.com/bitnami

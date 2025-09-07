@@ -1,0 +1,135 @@
+# ===== App =====
+app:
+  image:
+    repository: operately/operately-dev
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 2
+  port: 4000
+
+  probes:
+    liveness:
+      path: /healthz
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      timeoutSeconds: 2
+      failureThreshold: 3
+    readiness:
+      path: /ready
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 2
+      failureThreshold: 3
+
+  podSecurityContext:
+    fsGroup: 1000
+    fsGroupChangePolicy: "OnRootMismatch"
+
+  containerSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+
+  # replaces docker --shm-size=1g
+  shmSize: 1Gi
+
+  env:
+    NOTIFICATION_EMAIL: "notifications@locahost.dev"
+    OPERATELY_JS_SENTRY_ENABLED: "false"
+    OPERATELY_JS_SENTRY_DSN: "not-set"
+    OPERATELY_DEMO_BUILDER_ALLOWED: "true"
+    CERT_DOMAIN: "localhost"
+    CERT_DB_DIR: "/home/dev/certs"
+
+  extraEnv: {}
+
+  persistence:
+    media:
+      enabled: true
+      size: 20Gi
+      storageClass: ""
+    certs:
+      enabled: true
+      size: 1Gi
+      storageClass: ""
+
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "512Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+
+service:
+  type: ClusterIP
+  port: 4000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []     # e.g. - host: app.example.com
+  tls: []       # e.g. - secretName: app-tls, hosts: [app.example.com]
+
+# ===== Internal PostgreSQL (Bitnami) =====
+postgresql:
+  enabled: false
+  auth:
+    username: postgres
+    password: keyboard-cat
+    database: postgres
+  primary:
+    persistence:
+      enabled: true
+      size: 20Gi
+
+# ===== External PostgreSQL =====
+externalPostgres:
+  enabled: true
+  host: "pg.example.com"
+  port: 5432
+  username: "postgres"
+  password: "keyboard-cat"
+  secretRef:
+    enabled: false
+    name: ""
+    usernameKey: "username"
+    passwordKey: "password"
+
+# ===== Internal MinIO (Bitnami) =====
+minio:
+  enabled: false
+  auth:
+    rootUser: minio
+    rootPassword: changeme           # prefer secretRef with External Secrets/Vault in prod
+  defaultBuckets: "operately"        # Bitnami Chart supports this param
+  persistence:
+    enabled: true
+    size: 50Gi
+  service:
+    type: ClusterIP
+    ports:
+      api: 9000
+      console: 9001
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+
+# ===== External S3/MinIO =====
+externalS3:
+  enabled: true
+  endpoint: "https://s3.example.com"
+  bucket: "operately"
+  accessKey: ""
+  secretKey: ""
+  region: ""
+  secretRef:
+    enabled: false
+    name: ""
+    accessKeyKey: "accessKey"
+    secretKeyKey: "secretKey"
+
+podAnnotations: {}
