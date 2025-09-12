@@ -57,7 +57,7 @@ env:
   # Optional: http or https (default http when omitted)
   urlScheme: ""
   # Optional feature/config flags
-  allowLoginWithEmail: "no"
+  allowLoginWithEmail: "yes"
   allowSignupWithEmail: "no"
   requireEmailVerification: "no"
   allowLoginWithGoogle: "no"
@@ -103,7 +103,7 @@ postgresql:
     persistence:
       enabled: true
       storageClass: longhorn
-      size: 10Gi
+      size: 1Gi
 
 # Extra environment variables you want to inject (non-secret)
 extraEnv:
