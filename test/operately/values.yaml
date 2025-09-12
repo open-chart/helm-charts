@@ -1,5 +1,9 @@
 replicaCount: 1
 
+env:
+  operatelyHost: "okr.phuongdt.com"
+  urlScheme: "https"
+
 service:
   type: ClusterIP
   port: 4000
