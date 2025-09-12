@@ -1,0 +1,73 @@
+image:
+  repository: operately/operately
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+env:
+  operatelyHost: "localhost"
+  urlScheme: "http"
+  port: 4000
+  storageType: "local"
+  allowLoginWithEmail: "no"
+  allowSignupWithEmail: "no"
+  requireEmailVerification: "no"
+  allowLoginWithGoogle: "no"
+  allowSignupWithGoogle: "no"
+  sendOnboardingEmails: "no"
+  demoBuilderAllowed: "false"
+  jsSentryEnabled: "false"
+  beaconEnabled: "false"
+  beaconCollectorEnabled: "false"
+
+# Keep ACME disabled; HTTP only
+extraEnv:
+  - name: CERT_AUTO_RENEW
+    value: "no"
+  - name: CERT_DOMAIN
+    value: "localhost"
+  - name: CERT_EMAILS
+    value: "admin@localhost"
+  - name: CERT_DB_DIR
+    value: "/media/certs"
+
+service:
+  type: ClusterIP
+  port: 4000
+
+ingress:
+  enabled: false
+
+# No persistence (uses emptyDir for /media)
+persistence:
+  enabled: false
+  mountPath: /media
+
+secrets:
+  create: true
+  # 128 hex chars (>=64 bytes). Replace for real deployments.
+  secretKeyBase: "a3f1c5d7e9214b8c0f2e6a9db3c7e5f18b7a6c5d4e3f2a1908b7c6d5e4f3a2915e6f7a8b9c0d1e2f3a4b5c6d7e8f9012c3d4e5f60718293a4b5c6d7e8f90a1b2"
+
+db:
+  external:
+    enabled: false
+
+postgresql:
+  enabled: true
+  auth:
+    username: operately
+    password: supersecret
+    database: operately
+  primary:
+    persistence:
+      enabled: false
+    podSecurityContext:
+      enabled: true
+      fsGroup: 1001
+    containerSecurityContext:
+      enabled: true
+      runAsUser: 1001
+      runAsNonRoot: true
+  volumePermissions:
+    enabled: false

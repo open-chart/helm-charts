@@ -1,0 +1,73 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "operately.fullname" . }}-migrate
+  labels:
+    {{- include "operately.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        {{- include "operately.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - >-
+              HOST="$DB_HOST"; PORT="$DB_PORT";
+              if [ -n "$DATABASE_URL" ]; then
+                # Try to parse host and port from DATABASE_URL (ecto://user:pass@host:port/db)
+                HOST=$(echo "$DATABASE_URL" | sed -E 's#^[^:]+://[^@]+@([^:/]+).*$#\1#');
+                PORT=$(echo "$DATABASE_URL" | sed -E 's#.*:([0-9]+)/.*#\1#');
+                [ -z "$PORT" ] && PORT=5432;
+              fi;
+              echo "waiting for DB $HOST:$PORT";
+              for i in $(seq 1 60); do
+                nc -z "$HOST" "$PORT" && echo "DB ready" && exit 0;
+                echo "waiting for DB $HOST:$PORT"; sleep 3;
+              done; echo "DB not ready"; exit 1;
+          env:
+            - name: DB_HOST
+              value: {{ ternary (include "operately.postgresql.host" .) .Values.db.external.host .Values.postgresql.enabled | quote }}
+            - name: DB_PORT
+              value: {{ ternary "5432" (toString .Values.db.external.port) .Values.postgresql.enabled | quote }}
+          envFrom:
+            - secretRef:
+                name: {{ default (include "operately.fullname" .) .Values.secrets.name }}
+      containers:
+        - name: migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - /opt/operately/bin/create_db && /opt/operately/bin/migrate
+          envFrom:
+            - configMapRef:
+                name: {{ include "operately.fullname" . }}
+            - secretRef:
+                name: {{ default (include "operately.fullname" .) .Values.secrets.name }}
+          env:
+            {{- range .Values.extraEnv }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+            {{- range .Values.extraSecretEnv }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "operately.fullname" $) $.Values.secrets.name }}
+                  key: {{ .key }}
+            {{- end }}
+      {{- if .Values.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.image.imagePullSecrets | nindent 8 }}
+      {{- end }}

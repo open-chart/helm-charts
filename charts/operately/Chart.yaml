@@ -1,28 +1,13 @@
 apiVersion: v2
 name: operately
-description: Operately helm chart for Kubernetes
+description: Helm chart for Operately (Elixir/Phoenix)
 type: application
-
-version: 1.0.1
-appVersion: "0.0.1"
-
-keywords:
-  - productivity
-  - task-management
-  - operately
-
-home: https://github.com/open-selfhost/helm-charts
-sources:
-  - https://github.com/operately/operately
-
+version: 0.1.0
+appVersion: "1.0.0"
 
 dependencies:
-- condition: postgresql.enabled
-  name: postgresql
-  version: 16.7.27
-  repository: https://charts.bitnami.com/bitnami
+  - name: postgresql
+    version: 15.5.27
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
 
-- condition: minio.enabled
-  name: minio
-  version: 17.0.21
-  repository: https://charts.bitnami.com/bitnami

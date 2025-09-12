@@ -1,17 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: { { include "operately.fullname" . } }
-  labels: { { - include "operately.labels" . | nindent 4 } }
+  name: {{ include "operately.fullname" . }}
+  labels:
+    {{- include "operately.labels" . | nindent 4 }}
 spec:
-  type: { { .Values.service.type } }
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "operately.selectorLabels" . | nindent 4 }}
   ports:
-    {{- range .Values.service.ports }}
-    - protocol: {{ .protocol | default "TCP" }}
-      port: {{ .port }}
-      targetPort: {{ .targetPort }}
-      {{- if and (eq $.Values.service.type "NodePort") $value.nodePort }}
-      nodePort: {{ .nodePort }}
-      {{- end }}
-    {{- end }}
-  selector: { { - include "operately.selectorLabels" . | nindent 4 } }
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+
