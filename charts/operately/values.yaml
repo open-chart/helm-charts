@@ -26,7 +26,7 @@ ingress:
 persistence:
   enabled: true
   mountPath: /media
-  size: 10Gi
+  size: 1Gi
   storageClassName: longhorn
 
 resources: {}
