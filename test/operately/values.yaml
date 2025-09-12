@@ -3,6 +3,7 @@ replicaCount: 1
 env:
   operatelyHost: "okr.phuongdt.com"
   urlScheme: "https"
+  allowLoginWithEmail: "yes"
 
 service:
   type: ClusterIP
