@@ -24,24 +24,22 @@ spec:
             - >-
               HOST="$DB_HOST"; PORT="$DB_PORT";
               if [ -n "$DATABASE_URL" ]; then
-                # Try to parse host and port from DATABASE_URL (ecto://user:pass@host:port/db)
                 HOST=$(echo "$DATABASE_URL" | sed -E 's#^[^:]+://[^@]+@([^:/]+).*$#\1#');
                 PORT=$(echo "$DATABASE_URL" | sed -E 's#.*:([0-9]+)/.*#\1#');
                 [ -z "$PORT" ] && PORT=5432;
               fi;
               echo "waiting for DB $HOST:$PORT";
-              for i in $(seq 1 60); do
-                nc -z "$HOST" "$PORT" && echo "DB ready" && exit 0;
+              for i in $(seq 1 200); do
+                nc -z -w 2 "$HOST" "$PORT" && echo "DB ready" && exit 0;
                 echo "waiting for DB $HOST:$PORT"; sleep 3;
               done; echo "DB not ready"; exit 1;
           env:
             - name: DB_HOST
-              value: {{ ternary (include "operately.postgresql.host" .) .Values.db.external.host .Values.postgresql.enabled | quote }}
+              value: {{ ternary (include "operately.postgresql.host" .) .Values.externalPostgresql.host .Values.postgresql.enabled | quote }}
             - name: DB_PORT
-              value: {{ ternary "5432" (toString .Values.db.external.port) .Values.postgresql.enabled | quote }}
-          envFrom:
-            - secretRef:
-                name: {{ default (include "operately.fullname" .) .Values.secrets.name }}
+              value: {{ ternary "5432" (toString .Values.externalPostgresql.port) .Values.postgresql.enabled | quote }}
+            - name: DATABASE_URL
+              value: {{ required "Database must be configured via externalPostgresql or postgresql.enabled" (include "operately.database.url" .) | quote }}
       containers:
         - name: migrate
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -53,9 +51,11 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "operately.fullname" . }}
-            - secretRef:
-                name: {{ default (include "operately.fullname" .) .Values.secrets.name }}
           env:
+            - name: SECRET_KEY_BASE
+              value: {{ required "Provide .Values.secrets.secretKeyBase" (tpl .Values.secrets.secretKeyBase .) | quote }}
+            - name: DATABASE_URL
+              value: {{ required "Database must be configured via externalPostgresql or postgresql.enabled" (include "operately.database.url" .) | quote }}
             {{- range .Values.extraEnv }}
             - name: {{ .name }}
               value: {{ .value | quote }}

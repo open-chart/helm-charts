@@ -6,9 +6,9 @@ metadata:
     {{- include "operately.labels" . | nindent 4 }}
 data:
   PHX_SERVER: "true"
-  OPERATELY_HOST: {{ quote .Values.env.operatelyHost }}
-  OPERATELY_URL_SCHEME: {{ quote .Values.env.urlScheme }}
-  PORT: {{ quote (toString .Values.env.port) }}
+  OPERATELY_HOST: {{ quote (default (printf "%s.%s.svc.cluster.local" (include "operately.fullname" .) .Release.Namespace) .Values.env.operatelyHost) }}
+  OPERATELY_URL_SCHEME: {{ quote (.Values.env.urlScheme | default "http") }}
+  PORT: {{ quote (toString .Values.service.port) }}
   ALLOW_LOGIN_WITH_EMAIL: {{ quote .Values.env.allowLoginWithEmail }}
   ALLOW_SIGNUP_WITH_EMAIL: {{ quote .Values.env.allowSignupWithEmail }}
   REQUIRE_EMAIL_VERIFICATION: {{ quote .Values.env.requireEmailVerification }}
@@ -20,4 +20,3 @@ data:
   OPERATELY_JS_SENTRY_ENABLED: {{ quote .Values.env.jsSentryEnabled }}
   OPERATELY_BEACON_ENABLED: {{ quote .Values.env.beaconEnabled }}
   OPERATELY_BEACON_COLLECTOR_ENABLED: {{ quote .Values.env.beaconCollectorEnabled }}
-

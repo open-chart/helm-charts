@@ -50,9 +50,11 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "operately.fullname" . }}
-            - secretRef:
-                name: {{ default (include "operately.fullname" .) .Values.secrets.name }}
           env:
+            - name: SECRET_KEY_BASE
+              value: {{ required "Provide .Values.secrets.secretKeyBase" (tpl .Values.secrets.secretKeyBase .) | quote }}
+            - name: DATABASE_URL
+              value: {{ required "Database must be configured via externalPostgresql or postgresql.enabled" (include "operately.database.url" .) | quote }}
             {{- range .Values.extraEnv }}
             - name: {{ .name }}
               value: {{ .value | quote }}

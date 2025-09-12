@@ -8,8 +8,7 @@ Thank you for installing Operately!
    - A pre-install/pre-upgrade Job runs DB create + migrate.
 
 3. Database
-   - Using {{- if .Values.postgresql.enabled }} in-cluster PostgreSQL (Bitnami) {{- else if .Values.db.external.enabled }} external database {{- else }} no database configured {{- end }}.
+   - Using {{- if .Values.postgresql.enabled }} in-cluster PostgreSQL (Bitnami) {{- else if .Values.externalPostgresql.enabled }} external database {{- else }} no database configured {{- end }}.
 
 4. Persistence
    - Media volume {{- if .Values.persistence.enabled }} PVC {{ include "operately.fullname" . }}-media ({{ .Values.persistence.size }}, class {{ .Values.persistence.storageClassName | default "default" }}) {{- else }} emptyDir (ephemeral) {{- end }}.
-

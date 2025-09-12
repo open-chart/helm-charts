@@ -1,7 +1,7 @@
 # Image settings
 image:
   repository: operately/operately
-  tag: "latest"
+  tag: "v1.0.1"
   pullPolicy: IfNotPresent
   # imagePullSecrets:
   #   - name: regcred
@@ -52,12 +52,10 @@ mediaVolume:
 
 # Application env (non-secret)
 env:
-  # Required: host your users will access
-  operatelyHost: "example.operately.local"
-  # Optional: http or https (default https)
-  urlScheme: "https"
-  # Pod listening port
-  port: 4000
+  # Optional: host your users will access (omit for in-cluster only)
+  operatelyHost: ""
+  # Optional: http or https (default http when omitted)
+  urlScheme: ""
   # Optional feature/config flags
   allowLoginWithEmail: "no"
   allowSignupWithEmail: "no"
@@ -73,29 +71,28 @@ env:
 
 # Secrets
 secrets:
-  create: true
+  create: false
   name: ""
   secretKeyBase: "change-me"
   # If using a pre-existing secret, set create=false and name to that secret.
   # Expected keys: DATABASE_URL, SECRET_KEY_BASE (plus any extras you add)
 
 # Database configuration
-# Option A: external database
-db:
-  external:
-    enabled: true
-    # Provide a ready DATABASE_URL or individual components below
-    databaseUrl: ""
-    host: "postgres.example"
-    port: 5432
-    database: "operately"
-    username: "operately"
-    password: "change-me"
-    # If password is in an existing secret:
-    # existingSecret: name-of-secret
-    # existingSecretKey: POSTGRES_PASSWORD
+# Option A: external PostgreSQL
+externalPostgresql:
+  enabled: false
+  # Provide a ready DATABASE_URL or individual components below
+  databaseUrl: ""
+  host: "postgres.example"
+  port: 5432
+  database: "operately"
+  username: "operately"
+  password: "change-me"
+  # If password is in an existing secret:
+  # existingSecret: name-of-secret
+  # existingSecretKey: POSTGRES_PASSWORD
 
-# Option B: in-cluster Postgres via Bitnami chart (mutually exclusive with db.external)
+# Option B: in-cluster Postgres via Bitnami chart (mutually exclusive with externalPostgresql)
 postgresql:
   enabled: false
   auth:
@@ -109,11 +106,21 @@ postgresql:
       size: 10Gi
 
 # Extra environment variables you want to inject (non-secret)
-extraEnv: []
-# - name: OPERATELY_AI_PROVIDER
-#   value: openai
-# - name: OPERATELY_AI_OPENAI_MODEL
-#   value: gpt-5
+extraEnv:
+  # Keep ACME disabled; HTTP only defaults
+  - name: CERT_AUTO_RENEW
+    value: "no"
+  - name: CERT_DOMAIN
+    value: "localhost"
+  - name: CERT_EMAILS
+    value: "admin@localhost"
+  - name: CERT_DB_DIR
+    value: "/media/certs"
+  # Examples for other knobs:
+  # - name: OPERATELY_AI_PROVIDER
+  #   value: openai
+  # - name: OPERATELY_AI_OPENAI_MODEL
+  #   value: gpt-5
 
 # Extra secret env (will be keys looked up from the chosen secret)
 extraSecretEnv: []

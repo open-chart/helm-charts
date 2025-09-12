@@ -37,15 +37,15 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{- define "operately.database.url" -}}
-{{- $dbUrl := .Values.db.external.databaseUrl -}}
-{{- if and .Values.db.external.enabled $dbUrl }}
+{{- $dbUrl := .Values.externalPostgresql.databaseUrl -}}
+{{- if and .Values.externalPostgresql.enabled $dbUrl }}
 {{- $dbUrl -}}
-{{- else if and .Values.db.external.enabled (not $dbUrl) -}}
-{{- $host := .Values.db.external.host -}}
-{{- $port := .Values.db.external.port -}}
-{{- $db := .Values.db.external.database -}}
-{{- $user := .Values.db.external.username -}}
-{{- printf "ecto://%s:%s@%s:%v/%s" $user .Values.db.external.password $host $port $db -}}
+{{- else if and .Values.externalPostgresql.enabled (not $dbUrl) -}}
+{{- $host := .Values.externalPostgresql.host -}}
+{{- $port := .Values.externalPostgresql.port -}}
+{{- $db := .Values.externalPostgresql.database -}}
+{{- $user := .Values.externalPostgresql.username -}}
+{{- printf "ecto://%s:%s@%s:%v/%s" $user .Values.externalPostgresql.password $host $port $db -}}
 {{- else if .Values.postgresql.enabled -}}
 {{- $host := include "operately.postgresql.host" . -}}
 {{- $port := 5432 -}}
