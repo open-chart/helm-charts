@@ -13,7 +13,7 @@ ingress:
 
 # No persistence (uses emptyDir for /media)
 persistence:
-  enabled: false
+  enabled: true
 
 externalPostgresql:
   enabled: false
