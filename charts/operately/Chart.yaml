@@ -19,3 +19,5 @@ dependencies:
     version: 15.5.27
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
+
+icon: https://raw.githubusercontent.com/open-chart/helm-charts/main/icons/operately.svg
