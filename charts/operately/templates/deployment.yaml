@@ -53,6 +53,8 @@ spec:
           env:
             - name: SECRET_KEY_BASE
               value: {{ required "Provide .Values.secrets.secretKeyBase" (tpl .Values.secrets.secretKeyBase .) | quote }}
+            - name: OPERATELY_BLOB_TOKEN_SECRET_KEY
+              value: {{ required "Provide .Values.secrets.blobTokenSecretKey" (tpl .Values.secrets.blobTokenSecretKey .) | quote }}
             - name: DATABASE_URL
               value: {{ required "Database must be configured via externalPostgresql or postgresql.enabled" (include "operately.database.url" .) | quote }}
             {{- range .Values.extraEnv }}

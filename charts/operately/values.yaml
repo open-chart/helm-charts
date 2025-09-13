@@ -74,6 +74,9 @@ secrets:
   create: false
   name: ""
   secretKeyBase: "change-me"
+  # Used for encrypting local storage blob tokens. Generate with:
+  #   openssl rand -base64 32
+  blobTokenSecretKey: "change-me-base64-32"
   # If using a pre-existing secret, set create=false and name to that secret.
   # Expected keys: DATABASE_URL, SECRET_KEY_BASE (plus any extras you add)
 
