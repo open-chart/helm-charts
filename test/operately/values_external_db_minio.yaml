@@ -21,8 +21,6 @@ extraEnv:
     value: "minio.phuongdt.com" 
   - name: OPERATELY_STORAGE_S3_SCHEME
     value: "https"
-  - name: OPERATELY_STORAGE_S3_PORT
-    value: "443"
   - name: OPERATELY_STORAGE_S3_BUCKET
     value: "operately-media"
   - name: OPERATELY_STORAGE_S3_REGION
