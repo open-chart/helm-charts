@@ -7,6 +7,16 @@ env:
   storageType: "s3"
 
 extraEnv:
+  ## TODO: Make it a sperate env
+  - name: CERT_AUTO_RENEW
+    value: "no"
+  - name: CERT_DOMAIN
+    value: "localhost"
+  - name: CERT_EMAILS
+    value: "admin@localhost"
+  - name: CERT_DB_DIR
+    value: "/media/certs"
+  ## S3
   - name: OPERATELY_STORAGE_S3_HOST
     value: "minio.phuongdt.com" 
   - name: OPERATELY_STORAGE_S3_SCHEME
