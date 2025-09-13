@@ -3,6 +3,29 @@ entries:
   operately:
   - apiVersion: v2
     appVersion: 1.0.1
+    created: "2025-09-13T08:19:18.254462587Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.5.27
+    description: Helm chart for Operately
+    digest: fe43f8e35e15a54d957a1114dc3f19c642071b50137ca0982a0f0e547b6abf95
+    home: https://github.com/open-chart/helm-charts
+    icon: https://raw.githubusercontent.com/open-chart/helm-charts/main/icons/operately.svg
+    keywords:
+    - productivity
+    - task-management
+    - operately
+    name: operately
+    sources:
+    - https://github.com/operately/operately
+    type: application
+    urls:
+    - https://github.com/open-chart/helm-charts/releases/download/operately-0.0.8/operately-0.0.8.tgz
+    version: 0.0.8
+  - apiVersion: v2
+    appVersion: 1.0.1
     created: "2025-09-13T07:47:13.177404009Z"
     dependencies:
     - condition: postgresql.enabled
@@ -112,4 +135,4 @@ entries:
     urls:
     - https://github.com/open-chart/helm-charts/releases/download/operately-0.0.3/operately-0.0.3.tgz
     version: 0.0.3
-generated: "2025-09-13T07:47:13.17742033Z"
+generated: "2025-09-13T08:19:18.254492052Z"
