@@ -1,6 +1,63 @@
 apiVersion: v1
 entries:
+  opentick:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-09-13T08:31:26.989736551Z"
+    description: A minimal test chart to validate multi-chart publishing
+    digest: 216bdb2f98c4e8c1d0d308df004f7e06aad463333af8d185fe9f93619d910f10
+    name: opentick
+    type: application
+    urls:
+    - https://github.com/open-chart/helm-charts/releases/download/opentick-0.1.0/opentick-0.1.0.tgz
+    version: 0.1.0
   operately:
+  - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2025-09-13T08:19:18.254462587Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.5.27
+    description: Helm chart for Operately
+    digest: fe43f8e35e15a54d957a1114dc3f19c642071b50137ca0982a0f0e547b6abf95
+    home: https://github.com/open-chart/helm-charts
+    icon: https://raw.githubusercontent.com/open-chart/helm-charts/main/icons/operately.svg
+    keywords:
+    - productivity
+    - task-management
+    - operately
+    name: operately
+    sources:
+    - https://github.com/operately/operately
+    type: application
+    urls:
+    - https://github.com/open-chart/helm-charts/releases/download/operately-0.0.8/operately-0.0.8.tgz
+    version: 0.0.8
+  - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2025-09-13T07:47:13.177404009Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.5.27
+    description: Helm chart for Operately
+    digest: 9dba9391167bea0e912f9c9fe1317e5c579c2557f35f3cec2ff22c7cd9096de8
+    home: https://github.com/open-chart/helm-charts
+    icon: https://raw.githubusercontent.com/open-chart/helm-charts/main/icons/operately.svg
+    keywords:
+    - productivity
+    - task-management
+    - operately
+    name: operately
+    sources:
+    - https://github.com/operately/operately
+    type: application
+    urls:
+    - https://github.com/open-chart/helm-charts/releases/download/operately-0.0.7/operately-0.0.7.tgz
+    version: 0.0.7
   - apiVersion: v2
     appVersion: 1.0.1
     created: "2025-09-13T07:18:29.118723402Z"
@@ -89,4 +146,4 @@ entries:
     urls:
     - https://github.com/open-chart/helm-charts/releases/download/operately-0.0.3/operately-0.0.3.tgz
     version: 0.0.3
-generated: "2025-09-13T07:18:29.118737488Z"
+generated: "2025-09-13T08:31:26.989758312Z"
