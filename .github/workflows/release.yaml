@@ -1,24 +1,24 @@
-﻿name: Release Helm charts
+name: Release Helm charts
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
     paths:
       - 'charts/**'
+      - '.github/workflows/release.yaml'
+      - '.cr.yaml'
   workflow_dispatch:
 
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # to push to gh-pages and create releases
-      packages: write   # not strictly needed, but harmless
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # needed for chart-releaser changelog detection
+          fetch-depth: 0
 
       - name: Configure Git user
         run: |
@@ -30,9 +30,35 @@ jobs:
         with:
           version: v3.14.4
 
+      - name: Ensure gh-pages and .nojekyll
+        shell: bash
+        run: |
+          set -e
+          # Create gh-pages if it does not exist yet
+          if ! git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+            git switch --orphan gh-pages
+            rm -rf ./*
+            touch .nojekyll
+            git add .nojekyll
+            git commit -m "init gh-pages"
+            git push -u origin gh-pages
+            git switch -
+          fi
+          # Ensure .nojekyll exists on gh-pages
+          git fetch origin gh-pages
+          git worktree add ghp gh-pages
+          cd ghp
+          touch .nojekyll
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .nojekyll
+            git commit -m "Ensure .nojekyll"
+            git push origin HEAD:gh-pages
+          fi
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         with:
           charts_dir: charts
         env:
           CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

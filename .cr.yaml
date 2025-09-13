@@ -1,0 +1,6 @@
+pages-branch: gh-pages
+pages-index-path: index.yaml
+push: true
+packages-with-index: true
+release-name-template: "{{ .Name }}-{{ .Version }}"
+
