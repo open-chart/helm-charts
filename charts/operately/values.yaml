@@ -3,8 +3,6 @@ image:
   repository: operately/operately
   tag: "v1.0.1"
   pullPolicy: IfNotPresent
-  # imagePullSecrets:
-  #   - name: regcred
 
 replicaCount: 1
 
@@ -30,7 +28,6 @@ persistence:
   storageClassName: longhorn
 
 resources: {}
-
 nodeSelector: {}
 affinity: {}
 tolerations: []

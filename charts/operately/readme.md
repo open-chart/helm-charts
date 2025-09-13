@@ -1,107 +1,151 @@
 # Operately Helm Chart
 
-This chart deploys Operately (Elixir/Phoenix) to Kubernetes, runs database migrations automatically, and supports either an external PostgreSQL or an in-cluster PostgreSQL (Bitnami) with optional persistent storage (e.g., Longhorn).
+This chart deploys Operately to Kubernetes:
+- Runs database migrations automatically.
+- Supports either an external PostgreSQL or an in-cluster PostgreSQL (Bitnami)
+- Supports persistent storage (e.g., Longhorn) with local storage and S3 (Minio)
 
-## Features
-- Production-ready Deployment, Service, optional Ingress
-- Pre-install/upgrade Job to run `/opt/operately/bin/create_db` and `/opt/operately/bin/migrate`
-- External DB or Bitnami PostgreSQL subchart
-- Optional PVC for `/media` to persist application file data (default: storageClass `longhorn`)
-
-## Quickstart (external DB)
-
-1. Ensure you have a working PostgreSQL and construct a `DATABASE_URL` like:
-   `ecto://USER:PASSWORD@HOST:5432/operately` (or provide host/user/password under `externalPostgresql` and let the chart compose it).
-
-2. Set `secrets.secretKeyBase` in your values. By default, the chart injects `SECRET_KEY_BASE` and `DATABASE_URL` directly from values (no Secret is created unless you opt in).
-
-Example values (external DB + Longhorn persistence):
-
+## Introduction
+## Prerequisites
+## Installing the Chart
+### All-In-One
+This is example of all-in-one run
+- No persistent storage
+- Internal PostgreSQL
 ```yaml
+replicaCount: 1
+
+env:
+  # This is strictly need modify in the end url like localhost or cluster
+  operatelyHost: "localhost"
+  urlScheme: "http"
+  allowLoginWithEmail: "yes"
+
 service:
   type: ClusterIP
   port: 4000
 
+ingress:
+  enabled: false
+
+# No persistence
 persistence:
+  enabled: false
+
+# No external database
+externalPostgresql:
+  enabled: false
+
+# Use internal database
+postgresql:
   enabled: true
-  storageClassName: longhorn
-  size: 20Gi
+
+  # No persistence internal database
+  primary:
+    persistence:
+      enabled: false
 
 secrets:
-  create: false
-  secretKeyBase: "<output of: mix phx.gen.secret>"
+  # Generate a random with: openssl rand -hex 64
+  secretKeyBase: "a3f1c5d7e9214b8c0f2e6a9db3c7e5f18b7a6c5d4e3f2a1908b7c6d5e4f3a2915e6f7a8b9c0d1e2f3a4b5c6d7e8f9012c3d4e5f60718293a4b5c6d7e8f90a1b2"
+
+  # Generate with: openssl rand -base64 32
+  blobTokenSecretKey: "pY0B2l1n2hQ0o7mC1kJc8vG1gYxq0WkqQ6g5qV3H9oY="
+
+```
+### With External PostgreSQL
+Example for extrenal database
+- No persistent storage
+
+```yaml
+replicaCount: 1
+
+env:
+  # This is strictly need modify in the end url like localhost or cluster
+  operatelyHost: "localhost"
+  urlScheme: "http"
+  allowLoginWithEmail: "yes"
+
+service:
+  type: ClusterIP
+  port: 4000
+
+ingress:
+  enabled: false
+
+# No persistence (uses emptyDir for /media)
+persistence:
+  enabled: false
 
 externalPostgresql:
   enabled: true
-  databaseUrl: "ecto://operately:supersecret@postgres.my.net:5432/operately"
+  databaseUrl: "ecto://user:password@postgresql.postgresql.svc.cluster.local:5432/operately"
 
-ingress:
-  enabled: true
-  className: nginx
-  hosts:
-    - host: operately.example.com
-      paths:
-        - path: /
-          pathType: Prefix
-  tls:
-    - hosts: [operately.example.com]
-      secretName: operately-tls
-```
-
-Install:
-
-```sh
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm dependency build charts/operately
-helm upgrade --install operately charts/operately -f charts/operately/my-values-local-no-pv.yaml --create-namespace -n operately
-```
-
-## Quickstart (in-cluster DB)
-
-Enable Bitnami PostgreSQL and set credentials. The chart composes `DATABASE_URL` for you and the migration job waits for DB readiness.
-
-```yaml
 postgresql:
-  enabled: true
-  auth:
-    username: operately
-    password: supersecret
-    database: operately
-  primary:
-    persistence:
-      enabled: true
-      storageClass: longhorn
-      size: 10Gi
+  enabled: false
 
 secrets:
-  create: false
-  secretKeyBase: "<output of: mix phx.gen.secret>"
+  # Generate a random with: openssl rand -hex 64
+  secretKeyBase: "a3f1c5d7e9214b8c0f2e6a9db3c7e5f18b7a6c5d4e3f2a1908b7c6d5e4f3a2915e6f7a8b9c0d1e2f3a4b5c6d7e8f9012c3d4e5f60718293a4b5c6d7e8f90a1b2"
+
+  # Generate with: openssl rand -base64 32
+  blobTokenSecretKey: "pY0B2l1n2hQ0o7mC1kJc8vG1gYxq0WkqQ6g5qV3H9oY="
+
 ```
+### With External PostgreSQL and Minio
+```yaml
+replicaCount: 1
 
-## Persistence for `/media`
-- Set `persistence.enabled: true` to create a PVC named `<release>-operately-media` mounted at `/media`.
-- Default `storageClassName` is `longhorn` (change to match your cluster).
-- Set `persistence.enabled: false` to use an `emptyDir` (ephemeral).
+env:
+  operatelyHost: "localhost"
+  urlScheme: "http"
+  allowLoginWithEmail: "yes"
+  storageType: "s3"
 
-## Environment variables
-The chart maps the following variables used by `app/config/runtime.exs`:
-- `PORT` comes from `service.port`.
-- `OPERATELY_URL_SCHEME` defaults to `http` if not set in values.
-- `OPERATELY_HOST` is optional; omit for in-cluster-only usage.
-- Feature flags like `ALLOW_LOGIN_WITH_EMAIL`, `ALLOW_SIGNUP_WITH_EMAIL`, etc.
-- `DATABASE_URL` and `SECRET_KEY_BASE` are set directly from values by default.
-  - To use a pre-existing Secret, set `secrets.name` and reference keys via `extraSecretEnv`.
+extraEnv:
+  ## TODO: Make it a sperate env
+  - name: CERT_AUTO_RENEW
+    value: "no"
+  - name: CERT_DOMAIN
+    value: "localhost"
+  - name: CERT_EMAILS
+    value: "admin@localhost"
+  - name: CERT_DB_DIR
+    value: "/media/certs"
+  ## S3
+  - name: OPERATELY_STORAGE_S3_HOST
+    value: "minio.example.com" 
+  - name: OPERATELY_STORAGE_S3_SCHEME
+    value: "https"
+  - name: OPERATELY_STORAGE_S3_BUCKET
+    value: "operately-media"
+  - name: OPERATELY_STORAGE_S3_REGION
+    value: "minio"
+  - name: OPERATELY_STORAGE_S3_ACCESS_KEY_ID
+    value: "S3_ACCESS_KEY"       # for testing; use a Secret in prod
+  - name: OPERATELY_STORAGE_S3_SECRET_ACCESS_KEY
+    value: "S3_SECRET_ACCESS_KEY"       # for testing; use a Secret in prod
 
-To add more:
-- Non-secret: `values.yaml` -> `extraEnv`
-- Secret-backed: create/add keys to the chosen secret and reference via `extraSecretEnv`
+service:
+  type: ClusterIP
+  port: 4000
 
-## Notes
-- The container’s default command runs `bin/server` which sets `PHX_SERVER=true`.
-- Health probes are simple HTTP `GET /` on port 4000; adjust if you expose a dedicated health path.
-- Ensure network access from pods to your external DB if using the external option.
+ingress:
+  enabled: false
 
-## Uninstall
-```sh
-helm uninstall operately
+# No persistence (uses emptyDir for /media)
+persistence:
+  enabled: false
+
+externalPostgresql:
+  enabled: true
+  databaseUrl: "ecto://operately_user:vaUEPza4hdfhs@postgresql.postgresql.svc.cluster.local:5432/operately"
+
+postgresql:
+  enabled: false
+
+secrets:
+  # Generate a random 64-char secret at render time for local usage
+  secretKeyBase: "a3f1c5d7e9214b8c0f2e6a9db3c7e5f18b7a6c5d4e3f2a1908b7c6d5e4f3a2915e6f7a8b9c0d1e2f3a4b5c6d7e8f9012c3d4e5f60718293a4b5c6d7e8f90a1b2"
 ```
+## Parameters

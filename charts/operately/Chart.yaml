@@ -2,8 +2,17 @@ apiVersion: v2
 name: operately
 description: Helm chart for Operately (Elixir/Phoenix)
 type: application
-version: 0.1.0
+version: 0.0.1
 appVersion: "1.0.1"
+
+keywords:
+  - productivity
+  - task-management
+  - operately
+
+home: https://github.com/open-chart/helm-charts
+sources:
+  - https://github.com/operately/operately
 
 dependencies:
   - name: postgresql
