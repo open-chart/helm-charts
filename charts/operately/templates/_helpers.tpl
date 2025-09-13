@@ -1,62 +1,60 @@
-{{/*
-Expand the name of the chart.
-*/}}
 {{- define "operately.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
-{{- end }}
+{{- .Chart.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 
-{{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
-*/}}
 {{- define "operately.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-{{- end }}
+{{- if .Values.fullnameOverride -}}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name (include "operately.name" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
 
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "operately.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{/*
-Common labels
-*/}}
 {{- define "operately.labels" -}}
-helm.sh/chart: {{ include "operately.chart" . }}
-{{ include "operately.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+app.kubernetes.io/name: {{ include "operately.name" . }}
+helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/version: {{ .Chart.AppVersion }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
+{{- end -}}
 
-{{/*
-Selector labels
-*/}}
 {{- define "operately.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "operately.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
+{{- end -}}
 
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "operately.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "operately.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
+{{- define "operately.postgresql.host" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- if .Values.postgresql.fullnameOverride -}}
+{{ .Values.postgresql.fullnameOverride }}
+{{- else -}}
+{{ printf "%s-postgresql" .Release.Name }}
+{{- end -}}
+{{- else -}}
+{{- /* fall back unused when external DB */ -}}
+{{ printf "%s-postgresql" .Release.Name }}
+{{- end -}}
+{{- end -}}
+
+{{- define "operately.database.url" -}}
+{{- $dbUrl := .Values.externalPostgresql.databaseUrl -}}
+{{- if and .Values.externalPostgresql.enabled $dbUrl }}
+{{- $dbUrl -}}
+{{- else if and .Values.externalPostgresql.enabled (not $dbUrl) -}}
+{{- $host := .Values.externalPostgresql.host -}}
+{{- $port := .Values.externalPostgresql.port -}}
+{{- $db := .Values.externalPostgresql.database -}}
+{{- $user := .Values.externalPostgresql.username -}}
+{{- printf "ecto://%s:%s@%s:%v/%s" $user .Values.externalPostgresql.password $host $port $db -}}
+{{- else if .Values.postgresql.enabled -}}
+{{- $host := include "operately.postgresql.host" . -}}
+{{- $port := 5432 -}}
+{{- $db := .Values.postgresql.auth.database -}}
+{{- $user := .Values.postgresql.auth.username -}}
+{{- $pass := .Values.postgresql.auth.password -}}
+{{- printf "ecto://%s:%s@%s:%v/%s" $user $pass $host $port $db -}}
+{{- else -}}
+{{- /* No DB configured; leave empty to surface error */ -}}
+{{- "" -}}
+{{- end -}}
+{{- end -}}
