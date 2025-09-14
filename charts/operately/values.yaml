@@ -1,7 +1,7 @@
 # Image settings
 image:
   repository: operately/operately
-  tag: "v1.0.1"
+  tag: "v1.1.0"
   pullPolicy: IfNotPresent
 
 replicaCount: 1
