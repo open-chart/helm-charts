@@ -169,4 +169,23 @@ entries:
     urls:
     - https://github.com/open-chart/helm-charts/releases/download/operately-0.0.3/operately-0.0.3.tgz
     version: 0.0.3
-generated: "2025-09-14T15:09:07.945240735Z"
+  rwmarkable:
+  - apiVersion: v2
+    appVersion: 1.5.0
+    created: "2025-10-05T14:49:22.48576208Z"
+    description: Helm chart for rwMarkable
+    digest: 42f98feff9fd5c6d54f23f9c30667d6aaf67c45a8706acad938e8e7a93fe3aed
+    home: https://github.com/open-chart/helm-charts
+    icon: https://raw.githubusercontent.com/open-chart/helm-charts/main/icons/rwmarkable.png
+    keywords:
+    - nextjs
+    - productivity
+    - rwmarkable
+    name: rwmarkable
+    sources:
+    - https://github.com/fccview/rwmarkable
+    type: application
+    urls:
+    - https://github.com/open-chart/helm-charts/releases/download/rwmarkable-0.0.1/rwmarkable-0.0.1.tgz
+    version: 0.0.1
+generated: "2025-10-05T14:49:22.48578351Z"
