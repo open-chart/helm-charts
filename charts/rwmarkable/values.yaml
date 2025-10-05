@@ -1,0 +1,79 @@
+# Image settings
+image:
+  repository: ghcr.io/fccview/rwmarkable
+  tag: "1.5.0"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: example.rwmarkable.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# Security contexts
+podSecurityContext:
+  enabled: true
+  fsGroup: 1000
+  fsGroupChangePolicy: OnRootMismatch
+
+securityContext:
+  enabled: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+
+# Persistence options for volumes mapped in docker-compose
+persistence:
+  enabled: true
+  # Single PVC mounted at both paths
+  mountPathData: /app/data
+  mountPathConfig: /app/config
+  configReadOnly: true
+  size: 1Gi
+  storageClassName: "longhorn"
+
+# Non-secret environment variables
+env:
+  NODE_ENV: production
+  # Uncomment to enable HTTPS behavior in app
+  HTTPS: ""
+
+  # SSO with OIDC (optional)
+  SSO_MODE: ""
+  OIDC_ISSUER: ""
+  OIDC_CLIENT_ID: ""
+  APP_URL: "" # e.g., https://your-rwmarkable-domain.com
+
+# Extra env (non-secret)
+extraEnv: []
+# - name: SOME_FLAG
+#   value: "true"
+
+# Secrets (optional)
+secrets:
+  create: false
+  name: "" # if not creating, set to existing secret name
+  # If create=true, you can template sensitive keys under .Values.secrets.data
+  data: {}
+  # OIDC_CLIENT_SECRET: "change-me"
+
+# Map secret keys to env vars in the container
+extraSecretEnv: []
+# - name: OIDC_CLIENT_SECRET
+#   key: OIDC_CLIENT_SECRET
+
+resources: {}
+nodeSelector: {}
+affinity: {}
+tolerations: []
