@@ -1,0 +1,18 @@
+{{- if .Values.persistence.cache.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "rwmarkable.fullname" . }}-cache
+  labels:
+    {{- include "rwmarkable.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistence.cache.size | default "1Gi"}}
+  {{- if .Values.persistence.cache.storageClassName }}
+  storageClassName: {{ .Values.persistence.cache.storageClassName }}
+  {{- end }}
+{{- end }}
+

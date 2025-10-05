@@ -1,0 +1,18 @@
+apiVersion: v2
+name: rwmarkable
+description: Helm chart for rwMarkable (Next.js app)
+type: application
+version: 0.1.0
+appVersion: "latest"
+
+keywords:
+  - nextjs
+  - productivity
+  - rwmarkable
+
+home: https://github.com/open-chart/helm-charts
+sources:
+  - https://github.com/fccview/rwmarkable
+
+icon: https://raw.githubusercontent.com/open-chart/helm-charts/main/icons/placeholder.svg
+
