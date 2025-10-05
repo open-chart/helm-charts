@@ -49,14 +49,12 @@ spec:
                   key: {{ .key }}
             {{- end }}
           volumeMounts:
-            {{- if .Values.persistence.data.enabled }}
-            - name: data
-              mountPath: {{ .Values.persistence.data.mountPath }}
-            {{- end }}
-            {{- if .Values.persistence.config.enabled }}
-            - name: config
-              mountPath: {{ .Values.persistence.config.mountPath }}
-              readOnly: {{ .Values.persistence.config.readOnly | default true }}
+            {{- if .Values.persistence.enabled }}
+            - name: storage
+              mountPath: {{ .Values.persistence.mountPathData }}
+            - name: storage
+              mountPath: {{ .Values.persistence.mountPathConfig }}
+              readOnly: {{ .Values.persistence.configReadOnly | default true }}
             {{- end }}
             {{- if .Values.persistence.cache.enabled }}
             - name: cache
@@ -81,19 +79,13 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-        {{- if .Values.persistence.data.enabled }}
-        - name: data
+        {{- if .Values.persistence.enabled }}
+        - name: storage
           persistentVolumeClaim:
-            claimName: {{ include "rwmarkable.fullname" . }}-data
-        {{- end }}
-        {{- if .Values.persistence.config.enabled }}
-        - name: config
-          persistentVolumeClaim:
-            claimName: {{ include "rwmarkable.fullname" . }}-config
+            claimName: {{ include "rwmarkable.fullname" . }}-storage
         {{- end }}
         {{- if .Values.persistence.cache.enabled }}
         - name: cache
           persistentVolumeClaim:
-            claimName: {{ include "rwmarkable.fullname" . }}-cache
+          claimName: {{ include "rwmarkable.fullname" . }}-cache
         {{- end }}
-

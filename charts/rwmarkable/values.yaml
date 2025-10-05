@@ -1,7 +1,7 @@
 # Image settings
 image:
   repository: ghcr.io/fccview/rwmarkable
-  tag: "latest"
+  tag: "1.5.0"
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -35,22 +35,13 @@ securityContext:
 
 # Persistence options for volumes mapped in docker-compose
 persistence:
-  data:
-    enabled: true
-    mountPath: /app/data
-    size: 1Gi
-    storageClassName: ""
-  config:
-    enabled: false
-    mountPath: /app/config
-    size: 100Mi
-    storageClassName: ""
-    readOnly: true
-  cache:
-    enabled: false
-    mountPath: /app/.next/cache
-    size: 1Gi
-    storageClassName: ""
+  enabled: true
+  # Single PVC mounted at both paths
+  mountPathData: /app/data
+  mountPathConfig: /app/config
+  configReadOnly: true
+  size: 1Gi
+  storageClassName: "longhorn"
 
 # Non-secret environment variables
 env:
@@ -86,4 +77,3 @@ resources: {}
 nodeSelector: {}
 affinity: {}
 tolerations: []
-
