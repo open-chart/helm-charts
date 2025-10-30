@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "rwmarkable.fullname" . }}
+  name: {{ include "jotty.fullname" . }}
   labels:
-    {{- include "rwmarkable.labels" . | nindent 4 }}
+    {{- include "jotty.labels" . | nindent 4 }}
 data:
   PORT: {{ quote (toString .Values.service.port) }}
   NODE_ENV: {{ quote .Values.env.NODE_ENV }}

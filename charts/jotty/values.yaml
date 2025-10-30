@@ -1,7 +1,7 @@
 # Image settings
 image:
-  repository: ghcr.io/fccview/rwmarkable
-  tag: "1.5.0"
+  repository: ghcr.io/fccview/jotty
+  tag: "1.9.2"
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -15,7 +15,7 @@ ingress:
   className: ""
   annotations: {}
   hosts:
-    - host: example.rwmarkable.local
+    - host: example.jotty.local
       paths:
         - path: /
           pathType: Prefix
@@ -53,7 +53,7 @@ env:
   SSO_MODE: ""
   OIDC_ISSUER: ""
   OIDC_CLIENT_ID: ""
-  APP_URL: "" # e.g., https://your-rwmarkable-domain.com
+  APP_URL: "" # e.g., https://your-jotty-domain.com
 
 # Extra env (non-secret)
 extraEnv: []
