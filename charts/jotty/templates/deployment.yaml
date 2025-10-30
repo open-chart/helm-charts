@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "rwmarkable.fullname" . }}
+  name: {{ include "jotty.fullname" . }}
   labels:
-    {{- include "rwmarkable.labels" . | nindent 4 }}
+    {{- include "jotty.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "rwmarkable.selectorLabels" . | nindent 6 }}
+      {{- include "jotty.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "rwmarkable.selectorLabels" . | nindent 8 }}
+        {{- include "jotty.selectorLabels" . | nindent 8 }}
     spec:
       {{- if .Values.podSecurityContext.enabled }}
       securityContext:
@@ -20,7 +20,7 @@ spec:
         fsGroupChangePolicy: {{ .Values.podSecurityContext.fsGroupChangePolicy | quote }}
       {{- end }}
       containers:
-        - name: rwmarkable
+        - name: jotty
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.securityContext.enabled }}
@@ -35,7 +35,7 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: {{ include "rwmarkable.fullname" . }}
+                name: {{ include "jotty.fullname" . }}
           env:
             {{- range .Values.extraEnv }}
             - name: {{ .name }}
@@ -45,7 +45,7 @@ spec:
             - name: {{ .name }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ default (include "rwmarkable.fullname" $) $.Values.secrets.name }}
+                  name: {{ default (include "jotty.fullname" $) $.Values.secrets.name }}
                   key: {{ .key }}
             {{- end }}
           volumeMounts:
@@ -82,10 +82,10 @@ spec:
         {{- if .Values.persistence.enabled }}
         - name: storage
           persistentVolumeClaim:
-            claimName: {{ include "rwmarkable.fullname" . }}-storage
+            claimName: {{ include "jotty.fullname" . }}-storage
         {{- end }}
         {{- if .Values.persistence.cache.enabled }}
         - name: cache
           persistentVolumeClaim:
-          claimName: {{ include "rwmarkable.fullname" . }}-cache
+          claimName: {{ include "jotty.fullname" . }}-cache
         {{- end }}

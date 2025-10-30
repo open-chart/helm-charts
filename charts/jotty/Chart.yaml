@@ -1,0 +1,18 @@
+apiVersion: v2
+name: jotty
+description: Helm chart for jotty
+type: application
+version: 0.0.2
+appVersion: "1.9.2"
+
+keywords:
+  - nextjs
+  - productivity
+  - jotty
+
+home: https://github.com/open-chart/helm-charts
+sources:
+  - https://github.com/fccview/jotty
+
+icon: https://raw.githubusercontent.com/open-chart/helm-charts/main/icons/jotty.png
+

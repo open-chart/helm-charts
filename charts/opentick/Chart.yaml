@@ -1,7 +1,0 @@
-apiVersion: v2
-name: opentick
-description: A minimal test chart to validate multi-chart publishing
-type: application
-version: 0.1.0
-appVersion: "1.0.0"
-
