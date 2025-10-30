@@ -14,5 +14,5 @@ home: https://github.com/open-chart/helm-charts
 sources:
   - https://github.com/fccview/jotty
 
-icon: https://raw.githubusercontent.com/open-chart/helm-charts/main/icons/jotty.png
+icon: https://raw.githubusercontent.com/open-chart/helm-charts/main/icons/jotty.svg
 
